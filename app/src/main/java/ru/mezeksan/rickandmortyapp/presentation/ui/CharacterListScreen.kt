@@ -25,6 +25,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -37,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import ru.mezeksan.rickandmortyapp.R
 import ru.mezeksan.rickandmortyapp.domain.entity.Character
 import ru.mezeksan.rickandmortyapp.presentation.intent.CharacterListIntent
 import ru.mezeksan.rickandmortyapp.presentation.state.CharacterListState
@@ -108,14 +111,42 @@ private fun CharacterList(characters: List<Character>) {
             fontWeight = FontWeight.Bold,
             color = PortalGreen
         )
-        LazyColumn(
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(characters, key = { it.id ?: it.name ?: it.hashCode() }) { character ->
-                CharacterCard(character)
+        if (characters.isEmpty()) {
+            EmptyContent()
+        } else {
+            LazyColumn(
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(characters, key = { it.id ?: it.name ?: it.hashCode() }) { character ->
+                    CharacterCard(character)
+                }
             }
         }
+    }
+}
+
+@Composable
+private fun EmptyContent() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "Портал пуст...",
+            style = MaterialTheme.typography.headlineSmall,
+            color = PortalGreen
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "Персонажи не найдены",
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center,
+            color = ToxicText
+        )
     }
 }
 
@@ -142,6 +173,10 @@ private fun CharacterCard(character: Character) {
             AsyncImage(
                 model = character.image,
                 contentDescription = "Фото ${character.name.orEmpty()}",
+                placeholder = painterResource(id = R.drawable.ic_character_placeholder),
+                error = painterResource(id = R.drawable.ic_character_placeholder),
+                fallback = painterResource(id = R.drawable.ic_character_placeholder),
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(72.dp)
                     .clip(RoundedCornerShape(14.dp))
