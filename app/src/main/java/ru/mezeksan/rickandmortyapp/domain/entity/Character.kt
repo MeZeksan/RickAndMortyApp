@@ -1,4 +1,4 @@
-package ru.mezeksan.rickandmortyapp.domain
+package ru.mezeksan.rickandmortyapp.domain.entity
 
 data class Character(
     val id:Int?,

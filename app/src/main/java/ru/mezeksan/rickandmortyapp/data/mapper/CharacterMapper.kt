@@ -1,7 +1,7 @@
 package ru.mezeksan.rickandmortyapp.data.mapper
 
 import ru.mezeksan.rickandmortyapp.data.dto.CharacterDto
-import ru.mezeksan.rickandmortyapp.domain.Character
+import ru.mezeksan.rickandmortyapp.domain.entity.Character
 
 object CharacterMapper {
     fun mapFromDto(dto: CharacterDto): Character{
