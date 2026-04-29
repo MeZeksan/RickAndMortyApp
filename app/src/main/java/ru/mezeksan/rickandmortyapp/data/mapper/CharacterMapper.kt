@@ -6,15 +6,15 @@ import ru.mezeksan.rickandmortyapp.domain.entity.Character
 object CharacterMapper {
     fun mapFromDto(dto: CharacterDto): Character {
         return Character(
-            id = dto.id,
-            image = dto.image,
-            name = dto.name,
-            status = dto.status,
-            species = dto.species
+            id = dto.id ?: 0,
+            image = dto.image.orEmpty(),
+            name = dto.name ?: "Неизвестен",
+            status = dto.status ?: "Неизвестен",
+            species = dto.species ?: "Неизвестен",
         )
     }
 
-    fun mapFromDtoList(dtoList: List<CharacterDto>?): List<Character> {
-        return dtoList?.map { mapFromDto(it) } ?: emptyList()
+    fun mapFromDtoList(dtoList: List<CharacterDto>?): List<Character>{
+        return dtoList?.map{mapFromDto(it)}?: emptyList()
     }
 }

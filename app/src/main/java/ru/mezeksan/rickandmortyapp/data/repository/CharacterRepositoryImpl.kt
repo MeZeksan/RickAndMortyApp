@@ -7,7 +7,7 @@ import ru.mezeksan.rickandmortyapp.domain.repository.CharacterRepository
 
 class CharacterRepositoryImpl(
     private val api: CharacterApi
-) : CharacterRepository {
+): CharacterRepository {
     override suspend fun getCharacters(): List<Character> {
         val response = api.getCharacters()
         return CharacterMapper.mapFromDtoList(response.results)
