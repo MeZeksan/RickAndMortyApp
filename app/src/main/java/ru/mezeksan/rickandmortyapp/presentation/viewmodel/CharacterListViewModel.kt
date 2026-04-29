@@ -2,6 +2,7 @@ package ru.mezeksan.rickandmortyapp.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,7 +34,7 @@ class CharacterListViewModel(
             _state.value = CharacterListState.Loading
             getCharactersUseCase.invoke()
                 .onSuccess { characters ->
-                    _state.value = CharacterListState.Success(characters)
+                    _state.value = CharacterListState.Success(characters.toImmutableList())
                 }
                 .onFailure { throwable ->
                     _state.value = CharacterListState.Error(

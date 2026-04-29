@@ -1,5 +1,8 @@
 package ru.mezeksan.rickandmortyapp.domain.entity
 
+import androidx.compose.runtime.Stable
+
+@Stable
 data class Character(
     val id: Int,
     val image: String,

@@ -63,6 +63,8 @@ dependencies {
     // Coil
     implementation("io.coil-kt:coil-compose:2.7.0")
 
+    implementation(libs.kotlinx.collections.immutable)
+
     // Koin
     implementation("io.insert-koin:koin-android:3.5.0")
     implementation("io.insert-koin:koin-android-compat:3.5.0")

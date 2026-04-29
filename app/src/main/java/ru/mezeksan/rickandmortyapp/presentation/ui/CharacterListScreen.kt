@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import kotlinx.collections.immutable.ImmutableList
 import coil.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
 import ru.mezeksan.rickandmortyapp.R
@@ -99,9 +100,8 @@ private fun LoadingContent() {
     }
 }
 
-//что такое стабильные типы compose
 @Composable
-private fun CharacterList(characters: List<Character>) {
+private fun CharacterList(characters: ImmutableList<Character>) {
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
             text = "Список персонажей Рик & Морти",
@@ -117,7 +117,7 @@ private fun CharacterList(characters: List<Character>) {
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(characters, key = { it.id ?: it.name ?: it.hashCode() }) { character ->
+                items(characters, key = { it.id }) { character ->
                     CharacterCard(character)
                 }
             }
