@@ -14,7 +14,7 @@ object CharacterMapper {
         )
     }
 
-    fun mapFromDtoList(dtoList: List<CharacterDto>?): List<Character>{
-        return dtoList?.map{mapFromDto(it)}?: emptyList()
+    fun mapFromDtoList(dtoList: List<CharacterDto>?): List<Character> {
+        return dtoList?.map { mapFromDto(it) } ?: emptyList()
     }
 }

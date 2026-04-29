@@ -12,17 +12,17 @@ import ru.mezeksan.rickandmortyapp.presentation.viewmodel.CharacterListViewModel
 val appModule = module {
 
     //API
-    single<CharacterApi>{
+    single<CharacterApi> {
         ApiClient.retrofit.create(CharacterApi::class.java)
     }
 
     //Repo
-    single<CharacterRepository>{
+    single<CharacterRepository> {
         CharacterRepositoryImpl(get())
     }
 
     //UseCase
-    factory{
+    factory {
         GetCharactersUseCase(get())
     }
 

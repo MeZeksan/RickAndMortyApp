@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -25,19 +26,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
 import ru.mezeksan.rickandmortyapp.R
@@ -45,7 +44,6 @@ import ru.mezeksan.rickandmortyapp.domain.entity.Character
 import ru.mezeksan.rickandmortyapp.presentation.intent.CharacterListIntent
 import ru.mezeksan.rickandmortyapp.presentation.state.CharacterListState
 import ru.mezeksan.rickandmortyapp.presentation.viewmodel.CharacterListViewModel
-import ru.mezeksan.rickandmortyapp.presentation.viewmodel.CharacterListViewModelFactory
 import ru.mezeksan.rickandmortyapp.ui.theme.PortalBlue
 import ru.mezeksan.rickandmortyapp.ui.theme.PortalGreen
 import ru.mezeksan.rickandmortyapp.ui.theme.Red
@@ -100,6 +98,7 @@ private fun LoadingContent() {
         )
     }
 }
+
 //что такое стабильные типы compose
 @Composable
 private fun CharacterList(characters: List<Character>) {
@@ -161,7 +160,11 @@ private fun CharacterCard(character: Character) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .border(width = 1.dp, color = PortalBlue.copy(alpha = 0.5f), shape = RoundedCornerShape(18.dp)),
+            .border(
+                width = 1.dp,
+                color = PortalBlue.copy(alpha = 0.5f),
+                shape = RoundedCornerShape(18.dp)
+            ),
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = SpaceCard),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
