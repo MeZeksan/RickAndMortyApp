@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -93,7 +94,7 @@ private fun LoadingContent() {
         CircularProgressIndicator(color = PortalGreen)
         Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = "Открываем портал...",
+            text = stringResource(R.string.loading_portal),
             color = ToxicText,
             style = MaterialTheme.typography.titleMedium
         )
@@ -104,7 +105,7 @@ private fun LoadingContent() {
 private fun CharacterList(characters: ImmutableList<Character>) {
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
-            text = "Список персонажей Рик & Морти",
+            text = stringResource(R.string.character_list_title),
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 8.dp),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
@@ -135,13 +136,13 @@ private fun EmptyContent() {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Портал пуст...",
+            text = stringResource(R.string.empty_portal_title),
             style = MaterialTheme.typography.headlineSmall,
             color = PortalGreen
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "Персонажи не найдены",
+            text = stringResource(R.string.empty_portal_subtitle),
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             color = ToxicText
@@ -150,7 +151,18 @@ private fun EmptyContent() {
 }
 
 @Composable
+private fun statusLabel(status: String): String {
+    return when (status.lowercase()) {
+        "alive" -> stringResource(R.string.status_alive)
+        "dead" -> stringResource(R.string.status_dead)
+        "unknown" -> stringResource(R.string.status_unknown)
+        else -> status.takeIf { it.isNotBlank() } ?: stringResource(R.string.unknown_field)
+    }
+}
+
+@Composable
 private fun CharacterCard(character: Character) {
+    val displayName = character.name.ifBlank { stringResource(R.string.unknown_field) }
     val statusColor = when (character.status.lowercase()) {
         "alive" -> PortalGreen
         "dead" -> Red
@@ -175,7 +187,7 @@ private fun CharacterCard(character: Character) {
         ) {
             AsyncImage(
                 model = character.image,
-                contentDescription = "Фото ${character.name}",
+                contentDescription = stringResource(R.string.character_photo_cd, displayName),
                 placeholder = painterResource(id = R.drawable.ic_character_placeholder),
                 error = painterResource(id = R.drawable.ic_character_placeholder),
                 fallback = painterResource(id = R.drawable.ic_character_placeholder),
@@ -187,7 +199,7 @@ private fun CharacterCard(character: Character) {
             )
             Column {
                 Text(
-                    text = character.name,
+                    text = displayName,
                     style = MaterialTheme.typography.titleMedium,
                     color = ToxicText,
                     maxLines = 1,
@@ -195,13 +207,13 @@ private fun CharacterCard(character: Character) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = character.species,
+                    text = character.species.ifBlank { stringResource(R.string.unknown_field) },
                     style = MaterialTheme.typography.bodyMedium,
                     color = PortalBlue
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = character.status,
+                    text = statusLabel(character.status),
                     style = MaterialTheme.typography.bodySmall,
                     color = statusColor
                 )
@@ -223,7 +235,7 @@ private fun ErrorContent(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Что-то пошло не так",
+            text = stringResource(R.string.error_title),
             style = MaterialTheme.typography.headlineSmall,
             color = PortalGreen
         )
@@ -243,7 +255,7 @@ private fun ErrorContent(
             ),
             shape = RoundedCornerShape(12.dp)
         ) {
-            Text("Повторить")
+            Text(stringResource(R.string.retry))
         }
     }
 }

@@ -1,3 +1,27 @@
 <resources>
     <string name="app_name">RickAndMortyApp</string>
+
+    <!-- Экран списка -->
+    <string name="loading_portal">Открываем портал…</string>
+    <string name="character_list_title">Список персонажей Рик и Морти</string>
+    <string name="empty_portal_title">Портал пуст…</string>
+    <string name="empty_portal_subtitle">Персонажи не найдены</string>
+    <string name="error_title">Что-то пошло не так</string>
+    <string name="retry">Повторить</string>
+    <string name="character_photo_cd">Фото персонажа %1$s</string>
+
+    <!-- Значения по умолчанию для данных -->
+    <string name="unknown_field">Неизвестно</string>
+    <string name="status_alive">Жив</string>
+    <string name="status_dead">Мёртв</string>
+    <string name="status_unknown">Статус неизвестен</string>
+
+    <!-- Ошибки (общие) -->
+    <string name="error_unknown">Произошла неизвестная ошибка</string>
+    <string name="error_network">Не удалось подключиться. Проверьте интернет-соединение.</string>
+    <string name="error_http">Ошибка сервера (код %1$d)</string>
+
+    <!-- Сообщения API rickandmortyapi.com (поле error), на русском -->
+    <string name="error_api_nothing_here">Здесь ничего нет (запрошенные данные не найдены).</string>
+    <string name="error_api_bad_request">Неверный запрос к серверу.</string>
 </resources>

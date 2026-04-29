@@ -1,5 +1,6 @@
 package ru.mezeksan.rickandmortyapp.di
 
+import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import ru.mezeksan.rickandmortyapp.data.remote.ApiClient
@@ -28,6 +29,6 @@ val appModule = module {
 
     //ViewModel
     viewModel {
-        CharacterListViewModel(get())
+        CharacterListViewModel(androidApplication(), get())
     }
 }

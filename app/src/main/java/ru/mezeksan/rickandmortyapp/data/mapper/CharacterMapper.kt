@@ -8,9 +8,9 @@ object CharacterMapper {
         return Character(
             id = dto.id ?: 0,
             image = dto.image.orEmpty(),
-            name = dto.name ?: "Неизвестен",
-            status = dto.status ?: "Неизвестен",
-            species = dto.species ?: "Неизвестен",
+            name = dto.name.orEmpty(),
+            status = dto.status.orEmpty(),
+            species = dto.species.orEmpty(),
         )
     }
 
