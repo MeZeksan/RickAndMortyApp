@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import ru.mezeksan.rickandmortyapp.domain.usecase.GetCharactersUseCase
 import ru.mezeksan.rickandmortyapp.presentation.intent.CharacterListIntent
 import ru.mezeksan.rickandmortyapp.presentation.state.CharacterListState
+import ru.mezeksan.rickandmortyapp.presentation.util.toUserErrorKind
 
 class CharacterListViewModel(
     private val getCharactersUseCase: GetCharactersUseCase
@@ -37,9 +38,7 @@ class CharacterListViewModel(
                     _state.value = CharacterListState.Success(characters.toImmutableList())
                 }
                 .onFailure { throwable ->
-                    _state.value = CharacterListState.Error(
-                        message = throwable.localizedMessage ?: "Произошла неизвестная ошибка"
-                    )
+                    _state.value = CharacterListState.Error(throwable.toUserErrorKind())
                 }
         }
     }

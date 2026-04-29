@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">RickAndMortyApp</string>
+    <string name="character_list_title">Список персонажей Рик &amp; Морти</string>
+    <string name="loading_portal">Открываем портал…</string>
+    <string name="empty_portal_title">Портал пуст…</string>
+    <string name="empty_portal_subtitle">Персонажи не найдены</string>
+    <string name="error_title">Что-то пошло не так</string>
+    <string name="error_message_network">Нет подключения к сети. Попробуйте позже.</string>
+    <string name="error_message_server">Сервер временно недоступен. Попробуйте позже.</string>
+    <string name="error_message_generic">Не удалось загрузить данные. Попробуйте позже.</string>
+    <string name="retry">Повторить</string>
+    <string name="character_photo_content_description">Фото %1$s</string>
+    <string name="unknown_character_field">Неизвестен</string>
 </resources>
