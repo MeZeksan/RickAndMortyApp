@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -24,8 +23,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,14 +35,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import kotlinx.collections.immutable.ImmutableList
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import coil.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
 import ru.mezeksan.rickandmortyapp.R
 import ru.mezeksan.rickandmortyapp.domain.entity.Character
-import ru.mezeksan.rickandmortyapp.presentation.intent.CharacterListIntent
-import ru.mezeksan.rickandmortyapp.presentation.state.CharacterListState
 import ru.mezeksan.rickandmortyapp.presentation.state.UserErrorKind
+import ru.mezeksan.rickandmortyapp.presentation.util.toUserErrorKind
 import ru.mezeksan.rickandmortyapp.presentation.viewmodel.CharacterListViewModel
 import ru.mezeksan.rickandmortyapp.ui.theme.PortalBlue
 import ru.mezeksan.rickandmortyapp.ui.theme.PortalGreen
@@ -57,7 +55,7 @@ import ru.mezeksan.rickandmortyapp.ui.theme.ToxicText
 fun CharacterListScreen(
     viewModel: CharacterListViewModel = koinViewModel()
 ) {
-    val state by viewModel.state.collectAsState()
+    val lazyPagingItems = viewModel.charactersFlow.collectAsLazyPagingItems()
 
     Box(
         modifier = Modifier
@@ -72,13 +70,89 @@ fun CharacterListScreen(
                 )
             )
     ) {
-        when (val currentState = state) {
-            is CharacterListState.Loading -> LoadingContent()
-            is CharacterListState.Success -> CharacterList(characters = currentState.characters)
-            is CharacterListState.Error -> ErrorContent(
-                kind = currentState.kind,
-                onRetry = { viewModel.processIntent(CharacterListIntent.Retry) }
-            )
+        when {
+            lazyPagingItems.loadState.refresh is LoadState.Loading && lazyPagingItems.itemCount == 0 -> {
+                LoadingContent()
+            }
+
+            lazyPagingItems.loadState.refresh is LoadState.Error && lazyPagingItems.itemCount == 0 -> {
+                val error = (lazyPagingItems.loadState.refresh as LoadState.Error).error
+                ErrorContent(
+                    kind = error.toUserErrorKind(),
+                    onRetry = { lazyPagingItems.retry() }
+                )
+            }
+
+            else -> {
+                when {
+                    lazyPagingItems.itemCount == 0 &&
+                            lazyPagingItems.loadState.refresh is LoadState.NotLoading &&
+                            lazyPagingItems.loadState.refresh.endOfPaginationReached -> {
+                        EmptyStateWithTitle()
+                    }
+
+                    lazyPagingItems.itemCount == 0 -> {
+                        LoadingContent()
+                    }
+
+                    else -> {
+                        Column(modifier = Modifier.fillMaxSize()) {
+                            Text(
+                                text = stringResource(R.string.character_list_title),
+                                modifier = Modifier.padding(
+                                    start = 16.dp,
+                                    end = 16.dp,
+                                    top = 20.dp,
+                                    bottom = 8.dp
+                                ),
+                                style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = PortalGreen
+                            )
+                            LazyColumn(
+                                contentPadding = PaddingValues(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                items(
+                                    count = lazyPagingItems.itemCount,
+                                    key = lazyPagingItems.itemKey { it.id }
+                                ) { index ->
+                                    val character = lazyPagingItems[index]
+                                    character?.let {
+                                        val unknown =
+                                            stringResource(R.string.unknown_character_field)
+                                        CharacterCard(
+                                            character = it,
+                                            photoContentDescription = stringResource(
+                                                R.string.character_photo_content_description,
+                                                it.name.ifBlank { unknown }
+                                            )
+                                        )
+                                    }
+                                }
+
+                                val appendState = lazyPagingItems.loadState.append
+                                val showPaginationFooter =
+                                    appendState is LoadState.Loading || appendState is LoadState.Error
+                                items(
+                                    count = if (showPaginationFooter) 1 else 0,
+                                    key = { "pagination_footer" }
+                                ) {
+                                    when (appendState) {
+                                        is LoadState.Loading -> PaginationLoadingIndicator()
+                                        is LoadState.Error -> PaginationErrorItem(
+                                            kind = appendState.error.toUserErrorKind(),
+                                            onRetry = { lazyPagingItems.retry() }
+                                        )
+
+                                        else -> {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -103,7 +177,7 @@ private fun LoadingContent() {
 }
 
 @Composable
-private fun CharacterList(characters: ImmutableList<Character>) {
+private fun EmptyStateWithTitle() {
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
             text = stringResource(R.string.character_list_title),
@@ -112,25 +186,7 @@ private fun CharacterList(characters: ImmutableList<Character>) {
             fontWeight = FontWeight.Bold,
             color = PortalGreen
         )
-        if (characters.isEmpty()) {
-            EmptyContent()
-        } else {
-            LazyColumn(
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(characters, key = { it.id }) { character ->
-                    val unknown = stringResource(R.string.unknown_character_field)
-                    CharacterCard(
-                        character = character,
-                        photoContentDescription = stringResource(
-                            R.string.character_photo_content_description,
-                            character.name.ifBlank { unknown }
-                        )
-                    )
-                }
-            }
-        }
+        EmptyContent()
     }
 }
 
@@ -155,6 +211,54 @@ private fun EmptyContent() {
             textAlign = TextAlign.Center,
             color = ToxicText
         )
+    }
+}
+
+@Composable
+private fun PaginationLoadingIndicator() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(color = PortalGreen)
+    }
+}
+
+@Composable
+private fun PaginationErrorItem(
+    kind: UserErrorKind,
+    onRetry: () -> Unit
+) {
+    val messageRes = when (kind) {
+        UserErrorKind.Network -> R.string.error_message_network
+        UserErrorKind.Server -> R.string.error_message_server
+        UserErrorKind.Generic -> R.string.error_message_generic
+    }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(messageRes),
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center,
+            color = ToxicText
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = onRetry,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = PortalGreen,
+                contentColor = Color(0xFF0C1322)
+            ),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Text(stringResource(R.string.retry))
+        }
     }
 }
 

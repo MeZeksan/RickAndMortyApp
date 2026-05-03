@@ -65,6 +65,10 @@ dependencies {
 
     implementation(libs.kotlinx.collections.immutable)
 
+    val paging_version = "3.4.2"
+    implementation("androidx.paging:paging-common:$paging_version")
+    implementation("androidx.paging:paging-compose:$paging_version")
+
     // Koin
     implementation("io.insert-koin:koin-android:3.5.0")
     implementation("io.insert-koin:koin-android-compat:3.5.0")

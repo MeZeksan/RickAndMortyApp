@@ -4,7 +4,7 @@ import kotlinx.collections.immutable.ImmutableList
 import ru.mezeksan.rickandmortyapp.domain.entity.Character
 
 sealed interface CharacterListState {
-    object Loading : CharacterListState
+    data object Loading : CharacterListState
     data class Success(val characters: ImmutableList<Character>) : CharacterListState
     data class Error(val kind: UserErrorKind) : CharacterListState
 }
