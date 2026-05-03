@@ -4,17 +4,17 @@ import ru.mezeksan.rickandmortyapp.data.dto.CharacterDto
 import ru.mezeksan.rickandmortyapp.domain.entity.Character
 
 object CharacterMapper {
-    fun mapFromDto(dto: CharacterDto): Character{
+    fun mapFromDto(dto: CharacterDto): Character {
         return Character(
-            id = dto.id,
-            image = dto.image,
-            name = dto.name,
-            status = dto.status,
-            species = dto.species
+            id = dto.id ?: 0,
+            image = dto.image.orEmpty(),
+            name = dto.name.orEmpty(),
+            status = dto.status.orEmpty(),
+            species = dto.species.orEmpty(),
         )
     }
 
-    fun mapFromDtoList(dtoList: List<CharacterDto>?): List<Character>{
-        return dtoList?.map{mapFromDto(it)}?: emptyList()
+    fun mapFromDtoList(dtoList: List<CharacterDto>?): List<Character> {
+        return dtoList?.map { mapFromDto(it) } ?: emptyList()
     }
 }

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -25,26 +26,27 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.collections.immutable.ImmutableList
 import coil.compose.AsyncImage
+import org.koin.androidx.compose.koinViewModel
 import ru.mezeksan.rickandmortyapp.R
 import ru.mezeksan.rickandmortyapp.domain.entity.Character
 import ru.mezeksan.rickandmortyapp.presentation.intent.CharacterListIntent
 import ru.mezeksan.rickandmortyapp.presentation.state.CharacterListState
+import ru.mezeksan.rickandmortyapp.presentation.state.UserErrorKind
 import ru.mezeksan.rickandmortyapp.presentation.viewmodel.CharacterListViewModel
-import ru.mezeksan.rickandmortyapp.presentation.viewmodel.CharacterListViewModelFactory
 import ru.mezeksan.rickandmortyapp.ui.theme.PortalBlue
 import ru.mezeksan.rickandmortyapp.ui.theme.PortalGreen
 import ru.mezeksan.rickandmortyapp.ui.theme.Red
@@ -53,8 +55,7 @@ import ru.mezeksan.rickandmortyapp.ui.theme.ToxicText
 
 @Composable
 fun CharacterListScreen(
-    factory: CharacterListViewModelFactory,
-    viewModel: CharacterListViewModel = viewModel(factory = factory)
+    viewModel: CharacterListViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -75,7 +76,7 @@ fun CharacterListScreen(
             is CharacterListState.Loading -> LoadingContent()
             is CharacterListState.Success -> CharacterList(characters = currentState.characters)
             is CharacterListState.Error -> ErrorContent(
-                message = currentState.message,
+                kind = currentState.kind,
                 onRetry = { viewModel.processIntent(CharacterListIntent.Retry) }
             )
         }
@@ -94,7 +95,7 @@ private fun LoadingContent() {
         CircularProgressIndicator(color = PortalGreen)
         Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = "Открываем портал...",
+            text = stringResource(R.string.loading_portal),
             color = ToxicText,
             style = MaterialTheme.typography.titleMedium
         )
@@ -102,10 +103,10 @@ private fun LoadingContent() {
 }
 
 @Composable
-private fun CharacterList(characters: List<Character>) {
+private fun CharacterList(characters: ImmutableList<Character>) {
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
-            text = "Список персонажей Рик & Морти",
+            text = stringResource(R.string.character_list_title),
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 8.dp),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
@@ -118,8 +119,15 @@ private fun CharacterList(characters: List<Character>) {
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(characters, key = { it.id ?: it.name ?: it.hashCode() }) { character ->
-                    CharacterCard(character)
+                items(characters, key = { it.id }) { character ->
+                    val unknown = stringResource(R.string.unknown_character_field)
+                    CharacterCard(
+                        character = character,
+                        photoContentDescription = stringResource(
+                            R.string.character_photo_content_description,
+                            character.name.ifBlank { unknown }
+                        )
+                    )
                 }
             }
         }
@@ -136,13 +144,13 @@ private fun EmptyContent() {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Портал пуст...",
+            text = stringResource(R.string.empty_portal_title),
             style = MaterialTheme.typography.headlineSmall,
             color = PortalGreen
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "Персонажи не найдены",
+            text = stringResource(R.string.empty_portal_subtitle),
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             color = ToxicText
@@ -151,8 +159,11 @@ private fun EmptyContent() {
 }
 
 @Composable
-private fun CharacterCard(character: Character) {
-    val statusColor = when (character.status?.lowercase()) {
+private fun CharacterCard(
+    character: Character,
+    photoContentDescription: String
+) {
+    val statusColor = when (character.status.lowercase()) {
         "alive" -> PortalGreen
         "dead" -> Red
         else -> PortalBlue
@@ -161,7 +172,11 @@ private fun CharacterCard(character: Character) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .border(width = 1.dp, color = PortalBlue.copy(alpha = 0.5f), shape = RoundedCornerShape(18.dp)),
+            .border(
+                width = 1.dp,
+                color = PortalBlue.copy(alpha = 0.5f),
+                shape = RoundedCornerShape(18.dp)
+            ),
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = SpaceCard),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
@@ -172,7 +187,7 @@ private fun CharacterCard(character: Character) {
         ) {
             AsyncImage(
                 model = character.image,
-                contentDescription = "Фото ${character.name.orEmpty()}",
+                contentDescription = photoContentDescription,
                 placeholder = painterResource(id = R.drawable.ic_character_placeholder),
                 error = painterResource(id = R.drawable.ic_character_placeholder),
                 fallback = painterResource(id = R.drawable.ic_character_placeholder),
@@ -183,8 +198,9 @@ private fun CharacterCard(character: Character) {
                     .padding(end = 12.dp)
             )
             Column {
+                val unknown = stringResource(R.string.unknown_character_field)
                 Text(
-                    text = character.name.orEmpty(),
+                    text = character.name.ifBlank { unknown },
                     style = MaterialTheme.typography.titleMedium,
                     color = ToxicText,
                     maxLines = 1,
@@ -192,13 +208,13 @@ private fun CharacterCard(character: Character) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = character.species.orEmpty(),
+                    text = character.species.ifBlank { unknown },
                     style = MaterialTheme.typography.bodyMedium,
                     color = PortalBlue
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = character.status.orEmpty(),
+                    text = character.status.ifBlank { unknown },
                     style = MaterialTheme.typography.bodySmall,
                     color = statusColor
                 )
@@ -209,9 +225,14 @@ private fun CharacterCard(character: Character) {
 
 @Composable
 private fun ErrorContent(
-    message: String,
+    kind: UserErrorKind,
     onRetry: () -> Unit
 ) {
+    val messageRes = when (kind) {
+        UserErrorKind.Network -> R.string.error_message_network
+        UserErrorKind.Server -> R.string.error_message_server
+        UserErrorKind.Generic -> R.string.error_message_generic
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -220,13 +241,13 @@ private fun ErrorContent(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Что-то пошло не так",
+            text = stringResource(R.string.error_title),
             style = MaterialTheme.typography.headlineSmall,
             color = PortalGreen
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = message,
+            text = stringResource(messageRes),
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             color = ToxicText
@@ -240,7 +261,7 @@ private fun ErrorContent(
             ),
             shape = RoundedCornerShape(12.dp)
         ) {
-            Text("Повторить")
+            Text(stringResource(R.string.retry))
         }
     }
 }
