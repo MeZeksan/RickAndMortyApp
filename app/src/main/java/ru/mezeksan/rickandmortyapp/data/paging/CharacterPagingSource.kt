@@ -2,18 +2,21 @@ package ru.mezeksan.rickandmortyapp.data.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import retrofit2.HttpException
 import ru.mezeksan.rickandmortyapp.data.mapper.CharacterMapper
 import ru.mezeksan.rickandmortyapp.data.remote.CharacterApi
 import ru.mezeksan.rickandmortyapp.domain.entity.Character
 
 class CharacterPagingSource(
-    private val api: CharacterApi
+    private val api: CharacterApi,
+    private val query: String
 ) : PagingSource<Int, Character>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Character> {
         return try {
             val currentPage = params.key ?: 1
-            val response = api.getCharacters(page = currentPage)
+            val nameQuery = query.trim().takeIf { it.isNotEmpty() }
+            val response = api.getCharacters(page = currentPage, name = nameQuery)
 
             val characters = CharacterMapper.mapFromDtoList(response.results)
 
@@ -24,6 +27,12 @@ class CharacterPagingSource(
                 prevKey = null,
                 nextKey = nextPage
             )
+        } catch (e: HttpException) {
+            if (e.code() == 404) {
+                LoadResult.Page(data = emptyList(), prevKey = null, nextKey = null)
+            } else {
+                LoadResult.Error(e)
+            }
         } catch (e: Exception) {
             LoadResult.Error(e)
         }
