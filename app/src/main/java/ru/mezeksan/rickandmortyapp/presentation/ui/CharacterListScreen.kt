@@ -43,6 +43,11 @@ import org.koin.androidx.compose.koinViewModel
 import ru.mezeksan.rickandmortyapp.R
 import ru.mezeksan.rickandmortyapp.domain.entity.Character
 import ru.mezeksan.rickandmortyapp.presentation.state.UserErrorKind
+import ru.mezeksan.rickandmortyapp.presentation.util.appendShowsPaginationFooter
+import ru.mezeksan.rickandmortyapp.presentation.util.hasNoRenderedItems
+import ru.mezeksan.rickandmortyapp.presentation.util.isEmptyAfterRefreshComplete
+import ru.mezeksan.rickandmortyapp.presentation.util.isInitialRefreshError
+import ru.mezeksan.rickandmortyapp.presentation.util.isInitialRefreshLoading
 import ru.mezeksan.rickandmortyapp.presentation.util.toUserErrorKind
 import ru.mezeksan.rickandmortyapp.presentation.viewmodel.CharacterListViewModel
 import ru.mezeksan.rickandmortyapp.ui.theme.PortalBlue
@@ -71,11 +76,11 @@ fun CharacterListScreen(
             )
     ) {
         when {
-            lazyPagingItems.loadState.refresh is LoadState.Loading && lazyPagingItems.itemCount == 0 -> {
+            lazyPagingItems.isInitialRefreshLoading -> {
                 LoadingContent()
             }
 
-            lazyPagingItems.loadState.refresh is LoadState.Error && lazyPagingItems.itemCount == 0 -> {
+            lazyPagingItems.isInitialRefreshError -> {
                 val error = (lazyPagingItems.loadState.refresh as LoadState.Error).error
                 ErrorContent(
                     kind = error.toUserErrorKind(),
@@ -85,13 +90,11 @@ fun CharacterListScreen(
 
             else -> {
                 when {
-                    lazyPagingItems.itemCount == 0 &&
-                            lazyPagingItems.loadState.refresh is LoadState.NotLoading &&
-                            lazyPagingItems.loadState.refresh.endOfPaginationReached -> {
+                    lazyPagingItems.isEmptyAfterRefreshComplete -> {
                         EmptyStateWithTitle()
                     }
 
-                    lazyPagingItems.itemCount == 0 -> {
+                    lazyPagingItems.hasNoRenderedItems -> {
                         LoadingContent()
                     }
 
@@ -132,10 +135,8 @@ fun CharacterListScreen(
                                 }
 
                                 val appendState = lazyPagingItems.loadState.append
-                                val showPaginationFooter =
-                                    appendState is LoadState.Loading || appendState is LoadState.Error
                                 items(
-                                    count = if (showPaginationFooter) 1 else 0,
+                                    count = if (lazyPagingItems.appendShowsPaginationFooter) 1 else 0,
                                     key = { "pagination_footer" }
                                 ) {
                                     when (appendState) {

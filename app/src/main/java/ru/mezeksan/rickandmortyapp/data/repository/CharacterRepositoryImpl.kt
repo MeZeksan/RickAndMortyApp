@@ -12,10 +12,15 @@ import ru.mezeksan.rickandmortyapp.domain.repository.CharacterRepository
 class CharacterRepositoryImpl(
     private val api: CharacterApi
 ) : CharacterRepository {
+
+    companion object {
+        private const val PAGE_SIZE = 20
+    }
+
     override fun getCharacters(): Flow<PagingData<Character>> {
         return Pager(
             config = PagingConfig(
-                pageSize = 20,
+                pageSize = PAGE_SIZE,
                 enablePlaceholders = false
             ),
             pagingSourceFactory = { CharacterPagingSource(api) }

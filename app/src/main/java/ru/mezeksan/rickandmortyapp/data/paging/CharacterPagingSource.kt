@@ -2,11 +2,9 @@ package ru.mezeksan.rickandmortyapp.data.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import retrofit2.HttpException
 import ru.mezeksan.rickandmortyapp.data.mapper.CharacterMapper
 import ru.mezeksan.rickandmortyapp.data.remote.CharacterApi
 import ru.mezeksan.rickandmortyapp.domain.entity.Character
-import java.io.IOException
 
 class CharacterPagingSource(
     private val api: CharacterApi
@@ -26,10 +24,6 @@ class CharacterPagingSource(
                 prevKey = null,
                 nextKey = nextPage
             )
-        } catch (e: IOException) {
-            LoadResult.Error(e)
-        } catch (e: HttpException) {
-            LoadResult.Error(e)
         } catch (e: Exception) {
             LoadResult.Error(e)
         }
