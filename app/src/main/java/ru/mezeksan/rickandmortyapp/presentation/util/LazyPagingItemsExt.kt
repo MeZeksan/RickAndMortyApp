@@ -12,9 +12,11 @@ val <T : Any> LazyPagingItems<T>.isInitialRefreshError: Boolean
 val <T : Any> LazyPagingItems<T>.isEmptyAfterRefreshComplete: Boolean
     get() {
         val refresh = loadState.refresh
+        val append = loadState.append
         return itemCount == 0 &&
-            refresh is LoadState.NotLoading &&
-            refresh.endOfPaginationReached
+                refresh is LoadState.NotLoading &&
+                (refresh.endOfPaginationReached ||
+                        (append is LoadState.NotLoading && append.endOfPaginationReached))
     }
 
 val <T : Any> LazyPagingItems<T>.hasNoRenderedItems: Boolean
