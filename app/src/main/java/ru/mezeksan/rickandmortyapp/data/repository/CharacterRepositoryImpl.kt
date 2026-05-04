@@ -1,6 +1,10 @@
 package ru.mezeksan.rickandmortyapp.data.repository
 
-import ru.mezeksan.rickandmortyapp.data.mapper.CharacterMapper
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.Flow
+import ru.mezeksan.rickandmortyapp.data.paging.CharacterPagingSource
 import ru.mezeksan.rickandmortyapp.data.remote.CharacterApi
 import ru.mezeksan.rickandmortyapp.domain.entity.Character
 import ru.mezeksan.rickandmortyapp.domain.repository.CharacterRepository
@@ -8,8 +12,18 @@ import ru.mezeksan.rickandmortyapp.domain.repository.CharacterRepository
 class CharacterRepositoryImpl(
     private val api: CharacterApi
 ) : CharacterRepository {
-    override suspend fun getCharacters(): Result<List<Character>> = runCatching {
-        val response = api.getCharacters()
-        CharacterMapper.mapFromDtoList(response.results)
+
+    companion object {
+        private const val PAGE_SIZE = 20
+    }
+
+    override fun getCharacters(): Flow<PagingData<Character>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = PAGE_SIZE,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = { CharacterPagingSource(api) }
+        ).flow
     }
 }

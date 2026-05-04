@@ -1,7 +1,9 @@
 package ru.mezeksan.rickandmortyapp.domain.repository
 
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.Flow
 import ru.mezeksan.rickandmortyapp.domain.entity.Character
 
 interface CharacterRepository {
-    suspend fun getCharacters(): Result<List<Character>>
+    fun getCharacters(): Flow<PagingData<Character>>
 }
