@@ -5,5 +5,5 @@ import kotlinx.coroutines.flow.Flow
 import ru.mezeksan.rickandmortyapp.domain.entity.Character
 
 interface CharacterRepository {
-    fun getCharacters(): Flow<PagingData<Character>>
+    fun getCharacters(query: String = ""): Flow<PagingData<Character>>
 }

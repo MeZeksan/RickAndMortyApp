@@ -6,7 +6,7 @@ import ru.mezeksan.rickandmortyapp.domain.entity.Character
 import ru.mezeksan.rickandmortyapp.domain.repository.CharacterRepository
 
 class GetCharactersUseCase(private val repository: CharacterRepository) {
-    operator fun invoke(): Flow<PagingData<Character>> {
-        return repository.getCharacters()
+    operator fun invoke(query: String = ""): Flow<PagingData<Character>> {
+        return repository.getCharacters(query)
     }
 }

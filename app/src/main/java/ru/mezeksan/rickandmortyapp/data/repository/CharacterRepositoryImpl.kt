@@ -17,13 +17,13 @@ class CharacterRepositoryImpl(
         private const val PAGE_SIZE = 20
     }
 
-    override fun getCharacters(): Flow<PagingData<Character>> {
+    override fun getCharacters(query: String): Flow<PagingData<Character>> {
         return Pager(
             config = PagingConfig(
                 pageSize = PAGE_SIZE,
                 enablePlaceholders = false
             ),
-            pagingSourceFactory = { CharacterPagingSource(api) }
+            pagingSourceFactory = { CharacterPagingSource(api, query) }
         ).flow
     }
 }

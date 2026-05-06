@@ -11,4 +11,8 @@
     <string name="retry">Повторить</string>
     <string name="character_photo_content_description">Фото %1$s</string>
     <string name="unknown_character_field">Неизвестен</string>
+    <string name="search_hint">Поиск персонажа…</string>
+    <string name="search_clear_content_description">Очистить поиск</string>
+    <string name="empty_search_title">Никого не нашли…</string>
+    <string name="empty_search_subtitle">По запросу «%1$s» персонажи не найдены</string>
 </resources>
