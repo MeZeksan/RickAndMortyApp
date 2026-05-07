@@ -15,4 +15,5 @@
     <string name="search_clear_content_description">Очистить поиск</string>
     <string name="empty_search_title">Никого не нашли…</string>
     <string name="empty_search_subtitle">По запросу «%1$s» персонажи не найдены</string>
+    <string name="character_detail_title">Детали персонажа</string>
 </resources>

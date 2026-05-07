@@ -51,7 +51,8 @@ import ru.mezeksan.rickandmortyapp.ui.theme.ToxicText
 
 @Composable
 fun CharacterListScreen(
-    viewModel: CharacterListViewModel = koinViewModel()
+    viewModel: CharacterListViewModel = koinViewModel(),
+    onCharacterClick: (Int) -> Unit = {}
 ) {
     val lazyPagingItems = viewModel.charactersFlow.collectAsLazyPagingItems()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
@@ -116,7 +117,8 @@ fun CharacterListScreen(
                                             photoContentDescription = stringResource(
                                                 R.string.character_photo_content_description,
                                                 it.name.ifBlank { unknown }
-                                            )
+                                            ),
+                                            onClick = { onCharacterClick(it.id) }
                                         )
                                     }
                                 }

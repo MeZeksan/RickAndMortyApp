@@ -35,7 +35,8 @@ import ru.mezeksan.rickandmortyapp.ui.theme.ToxicText
 @Composable
 fun CharacterCard(
     character: Character,
-    photoContentDescription: String
+    photoContentDescription: String,
+    onClick: () -> Unit = {}
 ) {
     val statusColor = when (character.status.lowercase()) {
         "alive" -> PortalGreen
@@ -53,7 +54,8 @@ fun CharacterCard(
             ),
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = SpaceCard),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        onClick = onClick
     ) {
         Row(
             modifier = Modifier.padding(12.dp),
