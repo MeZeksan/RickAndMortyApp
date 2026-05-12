@@ -8,6 +8,7 @@ import ru.mezeksan.rickandmortyapp.data.mapper.CharacterMapper
 import ru.mezeksan.rickandmortyapp.data.paging.CharacterPagingSource
 import ru.mezeksan.rickandmortyapp.data.remote.CharacterApi
 import ru.mezeksan.rickandmortyapp.domain.entity.Character
+import ru.mezeksan.rickandmortyapp.domain.model.CharacterListQuery
 import ru.mezeksan.rickandmortyapp.domain.entity.CharacterDetail
 import ru.mezeksan.rickandmortyapp.domain.repository.CharacterRepository
 
@@ -19,7 +20,7 @@ class CharacterRepositoryImpl(
         private const val PAGE_SIZE = 20
     }
 
-    override fun getCharacters(query: String): Flow<PagingData<Character>> {
+    override fun getCharacters(query: CharacterListQuery): Flow<PagingData<Character>> {
         return Pager(
             config = PagingConfig(
                 pageSize = PAGE_SIZE,

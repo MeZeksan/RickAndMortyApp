@@ -6,17 +6,24 @@ import retrofit2.HttpException
 import ru.mezeksan.rickandmortyapp.data.mapper.CharacterMapper
 import ru.mezeksan.rickandmortyapp.data.remote.CharacterApi
 import ru.mezeksan.rickandmortyapp.domain.entity.Character
+import ru.mezeksan.rickandmortyapp.domain.model.CharacterListQuery
 
 class CharacterPagingSource(
     private val api: CharacterApi,
-    private val query: String
+    private val query: CharacterListQuery
 ) : PagingSource<Int, Character>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Character> {
         return try {
             val currentPage = params.key ?: 1
-            val nameQuery = query.trim().takeIf { it.isNotEmpty() }
-            val response = api.getCharacters(page = currentPage, name = nameQuery)
+            val nameQuery = query.name.trim().takeIf { it.isNotEmpty() }
+            val response = api.getCharacters(
+                page = currentPage,
+                name = nameQuery,
+                status = query.status,
+                gender = query.gender,
+                species = query.species
+            )
 
             val characters = CharacterMapper.mapFromDtoList(response.results)
 
