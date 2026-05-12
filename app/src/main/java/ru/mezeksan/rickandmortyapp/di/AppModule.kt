@@ -6,7 +6,9 @@ import ru.mezeksan.rickandmortyapp.data.remote.ApiClient
 import ru.mezeksan.rickandmortyapp.data.remote.CharacterApi
 import ru.mezeksan.rickandmortyapp.data.repository.CharacterRepositoryImpl
 import ru.mezeksan.rickandmortyapp.domain.repository.CharacterRepository
+import ru.mezeksan.rickandmortyapp.domain.usecase.GetCharacterDetailUseCase
 import ru.mezeksan.rickandmortyapp.domain.usecase.GetCharactersUseCase
+import ru.mezeksan.rickandmortyapp.presentation.viewmodel.CharacterDetailViewModel
 import ru.mezeksan.rickandmortyapp.presentation.viewmodel.CharacterListViewModel
 
 val appModule = module {
@@ -25,9 +27,15 @@ val appModule = module {
     factory {
         GetCharactersUseCase(get())
     }
+    factory {
+        GetCharacterDetailUseCase(get())
+    }
 
     //ViewModel
     viewModel {
         CharacterListViewModel(get())
+    }
+    viewModel {
+        CharacterDetailViewModel(get())
     }
 }
