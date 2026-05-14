@@ -8,5 +8,6 @@ data class CharacterDetail(
     val gender: String,
     val origin: String,
     val location: String,
-    val image: String
+    val image: String,
+    val episodeIds: List<Int>
 )

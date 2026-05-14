@@ -16,6 +16,10 @@ object CharacterMapper {
     }
 
     fun mapToDetail(dto: CharacterDto): CharacterDetail {
+        val episodeIds = dto.episode.orEmpty()
+            .mapNotNull { url -> url.substringAfterLast('/').toIntOrNull() }
+            .distinct()
+            .sorted()
         return CharacterDetail(
             id = dto.id ?: 0,
             name = dto.name.orEmpty(),
@@ -24,7 +28,8 @@ object CharacterMapper {
             gender = dto.gender.orEmpty(),
             origin = dto.origin?.name.orEmpty(),
             location = dto.location?.name.orEmpty(),
-            image = dto.image.orEmpty()
+            image = dto.image.orEmpty(),
+            episodeIds = episodeIds
         )
     }
 

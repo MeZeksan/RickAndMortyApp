@@ -16,6 +16,10 @@
     <string name="empty_search_title">Никого не нашли…</string>
     <string name="empty_search_subtitle">По запросу «%1$s» персонажи не найдены</string>
     <string name="character_detail_title">Детали персонажа</string>
+    <string name="episodes_section_title">Эпизоды</string>
+    <string name="episodes_loading">Загружаем эпизоды…</string>
+    <string name="episodes_empty">Эпизоды не указаны</string>
+    <string name="episodes_error_title">Не удалось загрузить эпизоды</string>
     <string name="filter_any">Все</string>
     <string name="filter_label_status">Статус</string>
     <string name="filter_label_gender">Пол</string>
