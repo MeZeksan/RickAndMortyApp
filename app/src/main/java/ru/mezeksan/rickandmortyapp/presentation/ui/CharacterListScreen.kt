@@ -37,6 +37,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import org.koin.androidx.compose.koinViewModel
 import ru.mezeksan.rickandmortyapp.R
+import ru.mezeksan.rickandmortyapp.presentation.intent.CharacterListIntent
 import ru.mezeksan.rickandmortyapp.presentation.model.CharacterFilterCatalog
 import ru.mezeksan.rickandmortyapp.presentation.model.CharacterListFilters
 import ru.mezeksan.rickandmortyapp.presentation.state.UserErrorKind
@@ -82,10 +83,7 @@ fun CharacterListScreen(
             ScreenHeader(
                 searchQuery = searchQuery,
                 filters = listFilters,
-                onSearchQueryChanged = viewModel::onSearchQueryChanged,
-                onStatusFilterChanged = viewModel::onStatusFilterChanged,
-                onGenderFilterChanged = viewModel::onGenderFilterChanged,
-                onSpeciesFilterChanged = viewModel::onSpeciesFilterChanged
+                onIntent = viewModel::dispatch
             )
 
             when {
@@ -163,10 +161,7 @@ fun CharacterListScreen(
 private fun ScreenHeader(
     searchQuery: String,
     filters: CharacterListFilters,
-    onSearchQueryChanged: (String) -> Unit,
-    onStatusFilterChanged: (String?) -> Unit,
-    onGenderFilterChanged: (String?) -> Unit,
-    onSpeciesFilterChanged: (String?) -> Unit
+    onIntent: (CharacterListIntent) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -182,7 +177,7 @@ private fun ScreenHeader(
         Spacer(modifier = Modifier.height(12.dp))
         SearchBar(
             query = searchQuery,
-            onQueryChanged = onSearchQueryChanged
+            onQueryChanged = { onIntent(CharacterListIntent.SearchQueryChanged(it)) }
         )
         Spacer(modifier = Modifier.height(12.dp))
         val scrollState = rememberScrollState()
@@ -200,7 +195,7 @@ private fun ScreenHeader(
                     filters.status
                 ),
                 options = CharacterFilterCatalog.statusOptions,
-                onOptionSelected = { onStatusFilterChanged(it.apiValue) },
+                onOptionSelected = { onIntent(CharacterListIntent.StatusFilterChanged(it.apiValue)) },
                 modifier = Modifier.width(146.dp)
             )
             CharacterFilterDropdown(
@@ -210,7 +205,7 @@ private fun ScreenHeader(
                     filters.gender
                 ),
                 options = CharacterFilterCatalog.genderOptions,
-                onOptionSelected = { onGenderFilterChanged(it.apiValue) },
+                onOptionSelected = { onIntent(CharacterListIntent.GenderFilterChanged(it.apiValue)) },
                 modifier = Modifier.width(154.dp)
             )
             CharacterFilterDropdown(
@@ -220,7 +215,7 @@ private fun ScreenHeader(
                     filters.species
                 ),
                 options = CharacterFilterCatalog.speciesOptions,
-                onOptionSelected = { onSpeciesFilterChanged(it.apiValue) },
+                onOptionSelected = { onIntent(CharacterListIntent.SpeciesFilterChanged(it.apiValue)) },
                 modifier = Modifier.width(188.dp)
             )
         }
