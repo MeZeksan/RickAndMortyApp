@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import ru.mezeksan.rickandmortyapp.domain.entity.Character
 import ru.mezeksan.rickandmortyapp.domain.model.CharacterListQuery
 import ru.mezeksan.rickandmortyapp.domain.usecase.GetCharactersUseCase
+import ru.mezeksan.rickandmortyapp.presentation.intent.CharacterListIntent
 import ru.mezeksan.rickandmortyapp.presentation.model.CharacterListFilters
 
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
@@ -56,19 +57,16 @@ class CharacterListViewModel(
         .flatMapLatest { query -> getCharactersUseCase(query) }
         .cachedIn(viewModelScope)
 
-    fun onSearchQueryChanged(query: String) {
-        _searchQuery.value = query
-    }
-
-    fun onStatusFilterChanged(apiValue: String?) {
-        _filters.value = _filters.value.copy(status = apiValue)
-    }
-
-    fun onGenderFilterChanged(apiValue: String?) {
-        _filters.value = _filters.value.copy(gender = apiValue)
-    }
-
-    fun onSpeciesFilterChanged(apiValue: String?) {
-        _filters.value = _filters.value.copy(species = apiValue)
+    fun dispatch(intent: CharacterListIntent) {
+        when (intent) {
+            is CharacterListIntent.SearchQueryChanged ->
+                _searchQuery.value = intent.query
+            is CharacterListIntent.StatusFilterChanged ->
+                _filters.value = _filters.value.copy(status = intent.apiValue)
+            is CharacterListIntent.GenderFilterChanged ->
+                _filters.value = _filters.value.copy(gender = intent.apiValue)
+            is CharacterListIntent.SpeciesFilterChanged ->
+                _filters.value = _filters.value.copy(species = intent.apiValue)
+        }
     }
 }
