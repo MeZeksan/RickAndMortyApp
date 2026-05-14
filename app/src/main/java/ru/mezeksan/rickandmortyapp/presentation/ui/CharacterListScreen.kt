@@ -1,15 +1,19 @@
 package ru.mezeksan.rickandmortyapp.presentation.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -33,8 +37,11 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import org.koin.androidx.compose.koinViewModel
 import ru.mezeksan.rickandmortyapp.R
+import ru.mezeksan.rickandmortyapp.presentation.model.CharacterFilterCatalog
+import ru.mezeksan.rickandmortyapp.presentation.model.CharacterListFilters
 import ru.mezeksan.rickandmortyapp.presentation.state.UserErrorKind
 import ru.mezeksan.rickandmortyapp.presentation.ui.components.CharacterCard
+import ru.mezeksan.rickandmortyapp.presentation.ui.components.CharacterFilterDropdown
 import ru.mezeksan.rickandmortyapp.presentation.ui.components.EmptyContent
 import ru.mezeksan.rickandmortyapp.presentation.ui.components.ErrorContent
 import ru.mezeksan.rickandmortyapp.presentation.ui.components.LoadingContent
@@ -56,6 +63,7 @@ fun CharacterListScreen(
 ) {
     val lazyPagingItems = viewModel.charactersFlow.collectAsLazyPagingItems()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+    val listFilters by viewModel.filters.collectAsStateWithLifecycle()
 
     Box(
         modifier = Modifier
@@ -73,7 +81,11 @@ fun CharacterListScreen(
         Column(modifier = Modifier.fillMaxSize()) {
             ScreenHeader(
                 searchQuery = searchQuery,
-                onSearchQueryChanged = viewModel::onSearchQueryChanged
+                filters = listFilters,
+                onSearchQueryChanged = viewModel::onSearchQueryChanged,
+                onStatusFilterChanged = viewModel::onStatusFilterChanged,
+                onGenderFilterChanged = viewModel::onGenderFilterChanged,
+                onSpeciesFilterChanged = viewModel::onSpeciesFilterChanged
             )
 
             when {
@@ -150,7 +162,11 @@ fun CharacterListScreen(
 @Composable
 private fun ScreenHeader(
     searchQuery: String,
-    onSearchQueryChanged: (String) -> Unit
+    filters: CharacterListFilters,
+    onSearchQueryChanged: (String) -> Unit,
+    onStatusFilterChanged: (String?) -> Unit,
+    onGenderFilterChanged: (String?) -> Unit,
+    onSpeciesFilterChanged: (String?) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -168,6 +184,46 @@ private fun ScreenHeader(
             query = searchQuery,
             onQueryChanged = onSearchQueryChanged
         )
+        Spacer(modifier = Modifier.height(12.dp))
+        val scrollState = rememberScrollState()
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(scrollState),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            CharacterFilterDropdown(
+                label = stringResource(R.string.filter_label_status),
+                selected = CharacterFilterCatalog.optionFor(
+                    CharacterFilterCatalog.statusOptions,
+                    filters.status
+                ),
+                options = CharacterFilterCatalog.statusOptions,
+                onOptionSelected = { onStatusFilterChanged(it.apiValue) },
+                modifier = Modifier.width(146.dp)
+            )
+            CharacterFilterDropdown(
+                label = stringResource(R.string.filter_label_gender),
+                selected = CharacterFilterCatalog.optionFor(
+                    CharacterFilterCatalog.genderOptions,
+                    filters.gender
+                ),
+                options = CharacterFilterCatalog.genderOptions,
+                onOptionSelected = { onGenderFilterChanged(it.apiValue) },
+                modifier = Modifier.width(154.dp)
+            )
+            CharacterFilterDropdown(
+                label = stringResource(R.string.filter_label_species),
+                selected = CharacterFilterCatalog.optionFor(
+                    CharacterFilterCatalog.speciesOptions,
+                    filters.species
+                ),
+                options = CharacterFilterCatalog.speciesOptions,
+                onOptionSelected = { onSpeciesFilterChanged(it.apiValue) },
+                modifier = Modifier.width(188.dp)
+            )
+        }
     }
 }
 

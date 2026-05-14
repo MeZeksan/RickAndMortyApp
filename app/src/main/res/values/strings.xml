@@ -16,4 +16,21 @@
     <string name="empty_search_title">Никого не нашли…</string>
     <string name="empty_search_subtitle">По запросу «%1$s» персонажи не найдены</string>
     <string name="character_detail_title">Детали персонажа</string>
+    <string name="filter_any">Все</string>
+    <string name="filter_label_status">Статус</string>
+    <string name="filter_label_gender">Пол</string>
+    <string name="filter_label_species">Вид</string>
+    <string name="filter_status_alive">Живой</string>
+    <string name="filter_status_dead">Мёртвый</string>
+    <string name="filter_status_unknown">Неизвестно (статус)</string>
+    <string name="filter_gender_female">Женский</string>
+    <string name="filter_gender_male">Мужской</string>
+    <string name="filter_gender_genderless">Бесполый</string>
+    <string name="filter_gender_unknown">Неизвестно (пол)</string>
+    <string name="filter_species_human">Человек</string>
+    <string name="filter_species_alien">Пришелец</string>
+    <string name="filter_species_robot">Робот</string>
+    <string name="filter_species_vampire">Вампир</string>
+    <string name="filter_species_demon">Демон</string>
+    <string name="filter_species_mythological">Мифологическое существо</string>
 </resources>
